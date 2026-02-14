@@ -24,6 +24,8 @@ const AddEditNote = ({
   const token = localStorage.getItem('token');
 
   const [error, setError] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Add Note
   const addNewNote = async () => {
@@ -34,9 +36,16 @@ const AddEditNote = ({
       tags.forEach(tag => formData.append("tags[]", tag));
       newFiles.forEach(file => formData.append("attachments", file));
 
+      setIsUploading(true);
+      setUploadProgress(0);
+
       const response = await axiosInstance.post("/add-note", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: (progressEvent) => {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(progress);
         },
       });
 
@@ -46,13 +55,19 @@ const AddEditNote = ({
         onClose();
       }
     } catch (error) {
+      console.error("Upload error:", error);
       if (
         error.response &&
         error.response.data &&
         error.response.data.message
       ) {
         setError(error.response.data.message);
+      } else {
+        setError("An error occurred while uploading. Please try again.");
       }
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -70,12 +85,19 @@ const AddEditNote = ({
         deletedAttachmentIds.forEach(id => formData.append("deleteAttachmentId", id));
       }
 
+      setIsUploading(true);
+      setUploadProgress(0);
+
       const response = await axiosInstance.put(
         "/edit-note/" + noteId,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(progress);
           },
         }
       );
@@ -86,13 +108,19 @@ const AddEditNote = ({
         onClose();
       }
     } catch (error) {
+      console.error("Update error:", error);
       if (
         error.response &&
         error.response.data &&
         error.response.data.message
       ) {
         setError(error.response.data.message);
+      } else {
+        setError("An error occurred while updating. Please try again.");
       }
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -251,11 +279,27 @@ const AddEditNote = ({
 
       {error && <p className="text-red-500 text-xs pt-4 font-medium">{error}</p>}
 
+      {isUploading && (
+        <div className="mt-6">
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">Uploading {newFiles.length} file(s)...</span>
+            <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{uploadProgress}%</span>
+          </div>
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-blue-600 h-full transition-all duration-300 ease-out"
+              style={{ width: `${uploadProgress}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
+
       <button
-        className="btn-primary font-medium mt-8 p-3 w-full rounded-lg hover:shadow-md transition-all"
+        className="btn-primary font-medium mt-8 p-3 w-full rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleAddNote}
+        disabled={isUploading}
       >
-        {type === "edit" ? "UPDATE NOTE" : "ADD NOTE"}
+        {isUploading ? "UPLOADING..." : (type === "edit" ? "UPDATE NOTE" : "ADD NOTE")}
       </button>
     </div>
   );
