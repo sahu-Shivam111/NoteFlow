@@ -26,7 +26,7 @@ export default function NoteCard({
         <div className="w-full h-52 bg-slate-100 dark:bg-gray-700 rounded-t-lg overflow-hidden flex items-center justify-center relative">
           {attachments[0].fileType.startsWith('image/') ? (
             <img
-              src={`http://localhost:8000/${attachments[0].url}`}
+              src={`${import.meta.env.VITE_BASE_URL || 'http://localhost:8000'}/${attachments[0].url}`}
               alt="Note Attachment"
               className="w-full h-full object-cover"
             />

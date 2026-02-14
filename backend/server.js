@@ -36,11 +36,9 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         "default-src": ["'self'"],
-        "frame-ancestors": ["'self'", "http://localhost:5173", "http://localhost:8000"],
-        "img-src": ["'self'", "data:", "http://localhost:8000", "*"],
+        "img-src": ["'self'", "data:", "*"],
         "script-src": ["'self'", "'unsafe-inline'"],
         "style-src": ["'self'", "'unsafe-inline'"],
-        "frame-src": ["'self'", "http://localhost:8000"],
       },
     },
     frameguard: false,
@@ -50,13 +48,17 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"], // Restrict to authorized frontends
+    origin: "*", // Allow all origins for production
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
 
 // Routes
+app.get("/", (req, res) => {
+  res.json({ message: "NoteFlow Backend is running!" });
+});
+
 app.use("/", userRoutes);
 app.use("/", noteRoutes);
 app.use("/api/ai", aiRoutes);
