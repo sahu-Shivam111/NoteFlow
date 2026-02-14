@@ -79,17 +79,68 @@ const ViewNote = ({ note, onCloseNote }) => {
   };
 
   const handleExportPDF = () => {
-    // ... existing export code ...
     const doc = new jsPDF();
-    const text = htmlToText(note.content);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 15;
+    const maxLineWidth = pageWidth - margin * 2;
+    let cursorY = 20;
 
-    doc.setFontSize(20);
-    doc.text(note.title, 10, 20);
+    // 1. Title
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    const titleLines = doc.splitTextToSize(note.title, maxLineWidth);
+    doc.text(titleLines, margin, cursorY);
+    cursorY += (titleLines.length * 10) + 5;
+
+    // 2. Metadata
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100);
+    doc.text(`Created on: ${new Date(note.createdAt).toLocaleDateString()}`, margin, cursorY);
+    cursorY += 15;
+    doc.setTextColor(0);
+
+    // 3. AI Summary (if available)
+    if (summary) {
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text("AI Smart Summary", margin, cursorY);
+      cursorY += 7;
+
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "italic");
+      const summaryLines = doc.splitTextToSize(summary, maxLineWidth);
+      doc.text(summaryLines, margin, cursorY);
+      cursorY += (summaryLines.length * 6) + 15;
+    }
+
+    // 4. Content
     doc.setFontSize(12);
-    doc.text(`Created on: ${new Date(note.createdAt).toLocaleDateString()}`, 10, 30);
+    doc.setFont("helvetica", "normal");
+    const text = htmlToText(note.content, {
+      wordwrap: 130
+    });
 
-    const splitText = doc.splitTextToSize(text, 180);
-    doc.text(splitText, 10, 40);
+    const contentLines = doc.splitTextToSize(text, maxLineWidth);
+
+    contentLines.forEach((line) => {
+      if (cursorY > pageHeight - margin) {
+        doc.addPage();
+        cursorY = 20;
+      }
+      doc.text(line, margin, cursorY);
+      cursorY += 7;
+    });
+
+    // 5. Footer (Page Numbers)
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(10);
+      doc.setTextColor(150);
+      doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: "center" });
+    }
 
     doc.save(`${note.title.replace(/\s+/g, '_')}.pdf`);
   };
