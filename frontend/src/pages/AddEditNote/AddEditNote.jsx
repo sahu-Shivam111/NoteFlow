@@ -20,7 +20,7 @@ const AddEditNote = ({
   const [newFiles, setNewFiles] = useState([]);
   const [deletedAttachmentIds, setDeletedAttachmentIds] = useState([]);
 
-  const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:8000';
+  const BASE_URL = (import.meta.env.VITE_BASE_URL || 'http://localhost:8000').replace(/\/$/, "");
   const token = localStorage.getItem('token');
 
   const [error, setError] = useState(null);

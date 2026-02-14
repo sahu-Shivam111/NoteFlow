@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const base_url = import.meta.env.VITE_BASE_URL || 'http://localhost:8000';
+const base_url = (import.meta.env.VITE_BASE_URL || 'http://localhost:8000').replace(/\/$/, "");
 
 const axiosInstance = axios.create({
     baseURL: base_url,
