@@ -39,6 +39,7 @@ app.use(
         "img-src": ["'self'", "data:", "*"],
         "script-src": ["'self'", "'unsafe-inline'"],
         "style-src": ["'self'", "'unsafe-inline'"],
+        "frame-ancestors": ["'self'", "https://note-flow-nu-one.vercel.app", "http://localhost:5173"],
       },
     },
     frameguard: false,
