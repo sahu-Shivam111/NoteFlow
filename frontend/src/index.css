@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  html {
+    font-family: 'Poppins', sans-serif;
+    @apply min-h-screen transition-colors duration-300;
+  }
+
+  html.dark,
+  .dark body {
+    background-color: #111827 !important;
+    /* gray-900 */
+    color: #f3f4f6 !important;
+    /* gray-100 */
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 transition-colors duration-300 min-h-screen;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .input-box {
+    @apply w-full text-sm bg-transparent border-[1.5px] px-5 py-3 rounded mb-4 outline-none;
+  }
+
+  .btn-primary {
+    @apply w-full text-sm bg-primary text-white p-2 rounded my-1 hover:bg-blue-600
+  }
+
+  .icon-btn {
+    @apply text-xl text-slate-300 cursor-pointer hover:text-primary
+  }
+
+  .input-lable {
+    @apply text-xs text-slate-400
+  }
+
+  /* Quill Dark Mode Support */
+  .dark .ql-toolbar {
+    @apply border-gray-600 bg-gray-800 text-gray-200;
+  }
+
+  .dark .ql-container {
+    @apply border-gray-600 bg-gray-800 text-gray-200 !important;
+  }
+
+  .dark .ql-stroke {
+    stroke: #e5e7eb !important;
+  }
+
+  .dark .ql-fill {
+    fill: #e5e7eb !important;
+  }
+
+  .dark .ql-picker {
+    color: #e5e7eb !important;
+  }
+
+  .dark .ql-picker-options {
+    @apply bg-gray-800 border-gray-600 !important;
+  }
+
+  .dark .ql-editor.ql-blank::before {
+    color: #9ca3af !important;
+  }
+
+  .dark .ql-editor {
+    color: #f3f4f6 !important;
+  }
+
+  .dark .ql-editor p,
+  .dark .ql-editor span,
+  .dark .ql-editor h1,
+  .dark .ql-editor h2,
+  .dark .ql-editor h3,
+  .dark .ql-editor li {
+    color: inherit !important;
+  }
+}
